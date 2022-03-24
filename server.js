@@ -9,7 +9,13 @@ const DEFAULT_PORT = 8000;
 
 const serveAdobeFavicon = function (req, res) {
   res.setHeader("Content-Type", "image/x-icon");
-  createReadStream(__dirname + `/app${req.url}`).pipe(res);
+  createReadStream(__dirname + `/app${req.url}`)
+    .pipe(res)
+    .catch((err) => {
+      res.writeHead(500);
+      res.end(err);
+      return;
+    });
 };
 
 // This is the callback function that is called when a request is made to the server. It will return a response to the client.

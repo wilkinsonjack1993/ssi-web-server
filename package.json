@@ -6,8 +6,5 @@
   "scripts": {
     "start": "node server.js"
   },
-  "author": "Jack Wilkinson",
-  "dependencies": {
-    "ssi": "^0.3.0"
-  }
+  "author": "Jack Wilkinson"
 }

@@ -43,6 +43,7 @@ const serveHtmlPages = async function (req, res) {
     return;
   }
 
+  // Default route is the index.shtml file.
   const fileRoute = req.url === "/" ? "/index.shtml" : req.url;
 
   try {
@@ -52,6 +53,7 @@ const serveHtmlPages = async function (req, res) {
     res.end(page);
   } catch (err) {
     // TODO - serve 404 page if file not found
+    // Return internal sever error with message.
     console.log(err);
     res.writeHead(500);
     res.end(err);
@@ -59,8 +61,10 @@ const serveHtmlPages = async function (req, res) {
   }
 };
 
+// Instanciate the server.
 const server = http.createServer(serveHtmlPages);
 
+// Start the server on the specified port and host.
 const host = process.env.NODE_HOST || DEFAULT_HOST;
 const port = process.env.NODE_PORT || DEFAULT_PORT;
 server.listen(port, host, () => {

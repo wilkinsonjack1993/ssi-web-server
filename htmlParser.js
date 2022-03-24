@@ -1,24 +1,7 @@
 const fs = require("fs").promises;
+const { asyncStringReplace } = require("./helpers/asyncStringReplace");
 
 const ATTRIBUTE_MATCHER = /([a-z]+)="(.+?)"/g;
-
-// This method was taken from: https://dev.to/ycmjason/stringprototypereplace-asynchronously-28k9
-const asyncStringReplace = async (str, regex, aReplacer) => {
-  const substrs = [];
-  let match;
-  let i = 0;
-  while ((match = regex.exec(str)) !== null) {
-    // put non matching string
-    substrs.push(str.slice(i, match.index));
-    // call the async replacer function with the matched array spreaded
-    substrs.push(aReplacer(...match));
-    i = regex.lastIndex;
-  }
-  // put the rest of str
-  substrs.push(str.slice(i));
-  // wait for aReplacer calls to finish and join them back into string
-  return (await Promise.all(substrs)).join("");
-};
 
 class SSIHtmlParser {
   constructor(filepath) {
@@ -27,6 +10,7 @@ class SSIHtmlParser {
   }
 
   // This method was taken from: https://github.com/kidwm/node-ssi/blob/166c716cbc22ecaf340d63093977785942a988ef/lib/DirectiveHandler.js#L113
+  // All it does is parse the attributes of the directive.
   parseAttributes(directive) {
     const attributes = [];
 
@@ -36,6 +20,8 @@ class SSIHtmlParser {
     return attributes;
   }
 
+  // Here we check that the directive is valid. We then get the corresponding file name and recursively parse it.
+  // This allows us to have nested SSI files.
   async directiveParser(directive, directiveName) {
     if (directiveName !== "include") {
       console.error(
@@ -57,29 +43,35 @@ class SSIHtmlParser {
       );
     }
 
+    // Get the file path. It's file attribute is relative to the file we are currently parsing.
+    // TODO - would be nice to have some file path validation here.
     const file = attributes[0].value;
-    const newFilepath = this.filepath.replace(
+    const pathOfFileToBeIncluded = this.filepath.replace(
       /([^\/]+$)/,
       file[0] === "/" ? file.substring(1) : file
     );
 
-    const newFileParser = new SSIHtmlParser(newFilepath);
+    // Recursively repeat the same process on this new file until we have all the HTML parsed.
+    const newFileParser = new SSIHtmlParser(pathOfFileToBeIncluded);
     const parsedResult = await newFileParser.parse();
     return parsedResult.toString();
   }
 
+  // Here we find each instance of an SSI directive in the file and replace it with the corresponding file.
   async parseServerSideIncludes() {
     const htmlString = this.file.toString();
 
     const parsedHtmlString = await asyncStringReplace(
       htmlString,
-      /<!--#([a-z]+)([ ]+([a-z]+)="(.+?)")* -->/g,
+      /<!--#([a-z]+)([ ]+([a-z]+)="(.+?)")* -->/g, // Matches <!--#include file="filename" --> and other directives - taken from node-ssi
       this.directiveParser.bind(this)
     );
 
     return new Buffer(parsedHtmlString, "utf8");
   }
 
+  // If it is not and SSI file, just return the file.
+  // Else recursively parse the SSI file and return the result.
   parse() {
     const isSSI = this.filepath.endsWith(".shtml");
 

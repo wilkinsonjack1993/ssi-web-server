@@ -46,10 +46,12 @@
 </head>
 
 <body>
+    <!--#include file="/header.shtml" -->
     <div class="center">
         <h1>Hello Again!</h1>
         <p>This is served from a file</p>
     </div>
+    <!--#include file="/header.shtml" -->
 </body>
 
 </html>

@@ -1,0 +1,10 @@
+{
+  "name": "ssi-web-server",
+  "version": "1.0.0",
+  "description": "A web server that supports server side includes.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Jack Wilkinson"
+}

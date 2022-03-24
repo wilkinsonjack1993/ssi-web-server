@@ -17,3 +17,4 @@ By default, the hostname is set to 'localhost' and the port is set to 8000. If y
 ### Resources used:
 
 - Digital Ocean - https://www.digitalocean.com/community/tutorials/how-to-create-a-web-server-in-node-js-with-the-http-module
+- node-ssi - https://github.com/kidwm/node-ssi

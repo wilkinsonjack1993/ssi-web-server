@@ -31,10 +31,8 @@ class SSIHtmlParser {
     const attributes = [];
 
     directive.replace(ATTRIBUTE_MATCHER, function (attribute, name, value) {
-      console.log(attribute, name, value);
       attributes.push({ name: name, value: value });
     });
-    console.log(attributes);
     return attributes;
   }
 
@@ -49,7 +47,6 @@ class SSIHtmlParser {
       // Could replace this with an error widget - for now just do load nothing.
       return "";
     }
-    console.log(directive);
 
     const attributes = this.parseAttributes(directive);
 
@@ -61,12 +58,10 @@ class SSIHtmlParser {
     }
 
     const file = attributes[0].value;
-    console.log("file: ", file);
     const newFilepath = this.filepath.replace(
       /([^\/]+$)/,
       file[0] === "/" ? file.substring(1) : file
     );
-    console.log("new file passer", newFilepath);
 
     const newFileParser = new SSIHtmlParser(newFilepath);
     const parsedResult = await newFileParser.parse();
@@ -82,10 +77,7 @@ class SSIHtmlParser {
       this.directiveParser.bind(this)
     );
 
-    console.log(parsedHtmlString);
-
-    // TODO - turn back to buffer?
-    return parsedHtmlString;
+    return new Buffer(parsedHtmlString, "utf8");
   }
 
   parse() {

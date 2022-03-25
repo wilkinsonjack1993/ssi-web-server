@@ -1,4 +1,4 @@
-# Server Side Includes Webserver
+# Server Side Includes Web Server
 
 ## Requirements
 
@@ -31,6 +31,8 @@ This repo could be improved with more time in a number of ways - here are a coup
 - Ability to handle more directives
 - Ability for the Include directive to suport error and virtual attributes
 - Better error handling
+- Configure eslint and prettier within the project
+- Automatically restart the server on change in development mode
 
 ## Resources used:
 
